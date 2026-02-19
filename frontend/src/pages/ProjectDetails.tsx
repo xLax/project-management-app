@@ -3,15 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { getProject, deleteTask } from '../services/http'
 import TaskModal from '../components/TaskModal'
-
-interface Task {
-  id: string
-  title: string
-  description: string
-  status: 'todo' | 'in-progress' | 'done'
-  priority: 'low' | 'medium' | 'high'
-  createdAt: string
-}
+import type { Task } from '../components/TaskModal'
+import ConfirmModal from '../components/ConfirmModal'
 
 interface Project {
   id: string
@@ -25,12 +18,20 @@ const STATUS_LABELS: Record<Task['status'], string> = {
   'todo': 'To Do',
   'in-progress': 'In Progress',
   'done': 'Done',
+  'released': 'Released',
 }
 
 const PRIORITY_LABELS: Record<Task['priority'], string> = {
   low: 'Low',
   medium: 'Medium',
   high: 'High',
+}
+
+function isOverdue(dueDate?: string) {
+  if (!dueDate) return false
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return new Date(dueDate) < today
 }
 
 export default function ProjectDetails() {
@@ -40,6 +41,8 @@ export default function ProjectDetails() {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [hideReleased, setHideReleased] = useState(false)
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
 
   const { data: project, isLoading, isError } = useQuery<Project>({
     queryKey: ['project', id],
@@ -68,9 +71,14 @@ export default function ProjectDetails() {
     queryClient.invalidateQueries({ queryKey: ['project', id] })
   }
 
-  function handleDeleteTask(task: Task) {
-    if (window.confirm(`Delete task "${task.title}"?`)) {
-      deleteMutation.mutate(task.id)
+  function handleDeleteRequest(task: Task) {
+    setTaskToDelete(task)
+  }
+
+  function confirmDelete() {
+    if (taskToDelete) {
+      deleteMutation.mutate(taskToDelete.id)
+      setTaskToDelete(null)
     }
   }
 
@@ -87,11 +95,13 @@ export default function ProjectDetails() {
     )
   }
 
-  const tasksByStatus = {
-    'todo': project.tasks.filter((t) => t.status === 'todo'),
-    'in-progress': project.tasks.filter((t) => t.status === 'in-progress'),
-    'done': project.tasks.filter((t) => t.status === 'done'),
-  }
+  const visibleStatuses: Task['status'][] = hideReleased
+    ? ['todo', 'in-progress', 'done']
+    : ['todo', 'in-progress', 'done', 'released']
+
+  const tasksByStatus = Object.fromEntries(
+    visibleStatuses.map((s) => [s, project.tasks.filter((t) => t.status === s)])
+  ) as Record<Task['status'], Task[]>
 
   return (
     <div className="page">
@@ -101,9 +111,19 @@ export default function ProjectDetails() {
           <h1>{project.name}</h1>
           {project.description && <p className="page-subtitle">{project.description}</p>}
         </div>
-        <button className="btn btn-primary" onClick={openCreateModal}>
-          + Create Task
-        </button>
+        <div className="page-header-actions">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={hideReleased}
+              onChange={(e) => setHideReleased(e.target.checked)}
+            />
+            Hide released tasks
+          </label>
+          <button className="btn btn-primary" onClick={openCreateModal}>
+            + Create Task
+          </button>
+        </div>
       </div>
 
       {project.tasks.length === 0 ? (
@@ -114,8 +134,8 @@ export default function ProjectDetails() {
           <button className="btn btn-primary" onClick={openCreateModal}>+ Create Task</button>
         </div>
       ) : (
-        <div className="kanban-board">
-          {(['todo', 'in-progress', 'done'] as Task['status'][]).map((status) => (
+        <div className={`kanban-board kanban-cols-${visibleStatuses.length}`}>
+          {visibleStatuses.map((status) => (
             <div key={status} className="kanban-column">
               <div className="kanban-column-header">
                 <span className={`status-badge status-${status}`}>{STATUS_LABELS[status]}</span>
@@ -126,34 +146,46 @@ export default function ProjectDetails() {
                 {tasksByStatus[status].length === 0 ? (
                   <div className="kanban-empty">No tasks</div>
                 ) : (
-                  tasksByStatus[status].map((task) => (
-                    <div key={task.id} className="task-card">
-                      <div className="task-card-header">
-                        <h3>{task.title}</h3>
-                        <span className={`priority-badge priority-${task.priority}`}>
-                          {PRIORITY_LABELS[task.priority]}
-                        </span>
+                  tasksByStatus[status].map((task) => {
+                    const overdue = isOverdue(task.dueDate)
+                    return (
+                      <div key={task.id} className={`task-card${overdue ? ' task-card-overdue' : ''}`}>
+                        <div className="task-card-header">
+                          <h3>{task.title}</h3>
+                          <span className={`priority-badge priority-${task.priority}`}>
+                            {PRIORITY_LABELS[task.priority]}
+                          </span>
+                        </div>
+                        {task.description && (
+                          <p className="task-card-desc">{task.description}</p>
+                        )}
+                        <div className="task-card-footer">
+                          {task.dueDate ? (
+                            <span className={`task-due-date${overdue ? ' task-due-date-overdue' : ''}`}>
+                              📅 {new Date(task.dueDate + 'T00:00:00').toLocaleDateString()}
+                            </span>
+                          ) : (
+                            <span />
+                          )}
+                          <div className="task-card-actions">
+                            <button
+                              className="btn btn-sm btn-ghost"
+                              onClick={() => openEditModal(task)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleDeleteRequest(task)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      {task.description && (
-                        <p className="task-card-desc">{task.description}</p>
-                      )}
-                      <div className="task-card-actions">
-                        <button
-                          className="btn btn-sm btn-ghost"
-                          onClick={() => openEditModal(task)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDeleteTask(task)}
-                          disabled={deleteMutation.isPending}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))
+                    )
+                  })
                 )}
               </div>
             </div>
@@ -165,8 +197,19 @@ export default function ProjectDetails() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSaved={handleModalSaved}
+        onDelete={handleDeleteRequest}
         projectId={id!}
         task={editingTask}
+      />
+
+      <ConfirmModal
+        isOpen={!!taskToDelete}
+        title="Delete Task"
+        message={`Are you sure you want to delete "${taskToDelete?.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setTaskToDelete(null)}
       />
     </div>
   )

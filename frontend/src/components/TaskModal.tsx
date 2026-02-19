@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { createTask, updateTask } from '../services/http'
 
-interface Task {
+export interface Task {
   id: string
   title: string
   description: string
-  status: 'todo' | 'in-progress' | 'done'
+  status: 'todo' | 'in-progress' | 'done' | 'released'
   priority: 'low' | 'medium' | 'high'
+  dueDate?: string
   createdAt: string
 }
 
@@ -14,19 +15,29 @@ interface TaskModalProps {
   isOpen: boolean
   onClose: () => void
   onSaved: () => void
+  onDelete?: (task: Task) => void
   projectId: string
   task?: Task | null // null = create mode, Task = edit mode
 }
 
-const EMPTY_FORM: { title: string; description: string; status: Task['status']; priority: Task['priority'] } = {
+type FormState = {
+  title: string
+  description: string
+  status: Task['status']
+  priority: Task['priority']
+  dueDate: string
+}
+
+const EMPTY_FORM: FormState = {
   title: '',
   description: '',
   status: 'todo',
   priority: 'medium',
+  dueDate: '',
 }
 
-export default function TaskModal({ isOpen, onClose, onSaved, projectId, task }: TaskModalProps) {
-  const [form, setForm] = useState(EMPTY_FORM)
+export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectId, task }: TaskModalProps) {
+  const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -39,6 +50,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, projectId, task }:
         description: task.description,
         status: task.status,
         priority: task.priority,
+        dueDate: task.dueDate ?? '',
       })
     } else {
       setForm(EMPTY_FORM)
@@ -55,10 +67,11 @@ export default function TaskModal({ isOpen, onClose, onSaved, projectId, task }:
     setLoading(true)
     setError('')
     try {
+      const payload = { ...form, dueDate: form.dueDate || undefined }
       if (isEditing && task) {
-        await updateTask(projectId, task.id, form)
+        await updateTask(projectId, task.id, payload)
       } else {
-        await createTask(projectId, form)
+        await createTask(projectId, payload)
       }
       onSaved()
       onClose()
@@ -113,6 +126,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, projectId, task }:
                 <option value="todo">To Do</option>
                 <option value="in-progress">In Progress</option>
                 <option value="done">Done</option>
+                <option value="released">Released</option>
               </select>
             </div>
 
@@ -130,15 +144,39 @@ export default function TaskModal({ isOpen, onClose, onSaved, projectId, task }:
             </div>
           </div>
 
+          <div className="form-group">
+            <label htmlFor="task-due-date">Due Date <span className="label-optional">(optional)</span></label>
+            <input
+              id="task-due-date"
+              type="date"
+              value={form.dueDate}
+              onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+            />
+          </div>
+
           {error && <p className="form-error">{error}</p>}
 
-          <div className="modal-actions">
-            <button type="button" className="btn btn-ghost" onClick={onClose} disabled={loading}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Task'}
-            </button>
+          <div className="modal-actions modal-actions-split">
+            {isEditing && onDelete && task ? (
+              <button
+                type="button"
+                className="btn btn-danger-solid btn-sm"
+                onClick={() => { onClose(); onDelete(task) }}
+                disabled={loading}
+              >
+                Delete Task
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="modal-actions-right">
+              <button type="button" className="btn btn-ghost" onClick={onClose} disabled={loading}>
+                Cancel
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Task'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

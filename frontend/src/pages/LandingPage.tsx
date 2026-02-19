@@ -79,7 +79,7 @@ export default function LandingPage() {
       <div className="auth-card">
         <div className="auth-logo">
           <span className="navbar-logo-icon">PM</span>
-          <h1>ProjectManager</h1>
+          <h1>Project Manager</h1>
           <p>Manage your projects and tasks efficiently</p>
         </div>
 

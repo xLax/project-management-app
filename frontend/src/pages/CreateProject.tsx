@@ -7,6 +7,8 @@ export default function CreateProject() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
+  const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+
   const [form, setForm] = useState({ name: '', description: '' })
   const [error, setError] = useState('')
 
@@ -50,6 +52,17 @@ export default function CreateProject() {
               placeholder="e.g. Website Redesign"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="project-date">Created On</label>
+            <input
+              id="project-date"
+              type="text"
+              value={today}
+              disabled
+              className="input-disabled"
             />
           </div>
 

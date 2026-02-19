@@ -67,13 +67,15 @@ export default function Dashboard() {
               className="project-card"
               onClick={() => navigate(`/projects/${project.id}`)}
             >
-              <div className="project-card-header">
-                <h2>{project.name}</h2>
-                <span className="task-count">{project.tasks.length} task{project.tasks.length !== 1 ? 's' : ''}</span>
+              <div className="project-card-body">
+                <div className="project-card-header">
+                  <h2>{project.name}</h2>
+                  <span className="task-count">{project.tasks.length} task{project.tasks.length !== 1 ? 's' : ''}</span>
+                </div>
+                {project.description && (
+                  <p className="project-card-desc">{project.description}</p>
+                )}
               </div>
-              {project.description && (
-                <p className="project-card-desc">{project.description}</p>
-              )}
               <div className="project-card-footer">
                 <span className="project-date">
                   Created {new Date(project.createdAt).toLocaleDateString()}

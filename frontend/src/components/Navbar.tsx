@@ -18,7 +18,7 @@ export default function Navbar() {
           title="Project Manager"
         >
           <span className="navbar-logo-icon">PM</span>
-          <span className="navbar-logo-text">ProjectManager</span>
+          <span className="navbar-logo-text">Project Manager</span>
         </button>
 
         {isLoggedIn && (
