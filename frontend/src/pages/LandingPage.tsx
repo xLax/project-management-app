@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { login, register } from '../services/http'
 import styles from './LandingPage.module.css'
-import FormGroup from '../components/FormGroup'
+import FormGroup from '../components/FormGroup/FormGroup'
 
 type Tab = 'login' | 'register'
 

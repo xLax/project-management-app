@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { createTask, updateTask } from '../services/http'
-import type { Task, TaskModalProps, TaskFormState } from '../types/task'
-import styles from './Modal.module.css'
-import FormGroup from './FormGroup'
+import { createTask, updateTask } from '../../services/http'
+import type { Task, TaskModalProps, TaskFormState } from '../../types/task'
+import styles from '../Modal.module.css'
+import FormGroup from '../FormGroup/FormGroup'
 
 const EMPTY_FORM: TaskFormState = {
   title: '',

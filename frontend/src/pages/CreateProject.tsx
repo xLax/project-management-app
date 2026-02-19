@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createProject } from '../services/http'
-import FormGroup from '../components/FormGroup'
+import FormGroup from '../components/FormGroup/FormGroup'
 
 export default function CreateProject() {
   const navigate = useNavigate()

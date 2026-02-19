@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { getProjects } from '../services/http'
 import type { Project } from '../types/project'
-import ProjectCard from '../components/ProjectCard'
-import EmptyState from '../components/EmptyState'
+import ProjectCard from '../components/ProjectCard/ProjectCard'
+import EmptyState from '../components/EmptyState/EmptyState'
 import styles from './Dashboard.module.css'
 
 export default function Dashboard() {

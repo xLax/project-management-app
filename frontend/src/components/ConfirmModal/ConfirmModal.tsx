@@ -1,5 +1,5 @@
-import type { ConfirmModalProps } from '../types/modal'
-import styles from './Modal.module.css'
+import type { ConfirmModalProps } from '../../types/modal'
+import styles from '../Modal.module.css'
 
 export default function ConfirmModal({
   isOpen,

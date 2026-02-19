@@ -1,4 +1,4 @@
-import type { Task } from '../types/task'
+import type { Task } from '../../types/task'
 import styles from './TaskCard.module.css'
 
 const PRIORITY_LABELS: Record<Task['priority'], string> = {
