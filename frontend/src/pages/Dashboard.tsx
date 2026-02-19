@@ -1,14 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { getProjects } from '../services/http'
-
-interface Project {
-  id: string
-  name: string
-  description: string
-  createdAt: string
-  tasks: unknown[]
-}
+import type { Project } from '../types/project'
+import styles from './Dashboard.module.css'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -60,24 +54,24 @@ export default function Dashboard() {
           </button>
         </div>
       ) : (
-        <div className="project-grid">
+        <div className={styles.projectGrid}>
           {projects.map((project) => (
             <div
               key={project.id}
-              className="project-card"
+              className={styles.projectCard}
               onClick={() => navigate(`/projects/${project.id}`)}
             >
-              <div className="project-card-body">
-                <div className="project-card-header">
+              <div className={styles.projectCardBody}>
+                <div className={styles.projectCardHeader}>
                   <h2>{project.name}</h2>
-                  <span className="task-count">{project.tasks.length} task{project.tasks.length !== 1 ? 's' : ''}</span>
+                  <span className={styles.taskCount}>{project.tasks.length} task{project.tasks.length !== 1 ? 's' : ''}</span>
                 </div>
                 {project.description && (
-                  <p className="project-card-desc">{project.description}</p>
+                  <p className={styles.projectCardDesc}>{project.description}</p>
                 )}
               </div>
-              <div className="project-card-footer">
-                <span className="project-date">
+              <div className={styles.projectCardFooter}>
+                <span className={styles.projectDate}>
                   Created {new Date(project.createdAt).toLocaleDateString()}
                 </span>
                 <span className="link">View →</span>

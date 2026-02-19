@@ -3,16 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { getProject, deleteTask } from '../services/http'
 import TaskModal from '../components/TaskModal'
-import type { Task } from '../components/TaskModal'
 import ConfirmModal from '../components/ConfirmModal'
-
-interface Project {
-  id: string
-  name: string
-  description: string
-  createdAt: string
-  tasks: Task[]
-}
+import type { Task } from '../types/task'
+import type { Project } from '../types/project'
+import styles from './ProjectDetails.module.css'
 
 const STATUS_LABELS: Record<Task['status'], string> = {
   'todo': 'To Do',
@@ -25,6 +19,19 @@ const PRIORITY_LABELS: Record<Task['priority'], string> = {
   low: 'Low',
   medium: 'Medium',
   high: 'High',
+}
+
+const STATUS_BADGE_CLASSES: Record<Task['status'], string> = {
+  'todo': 'statusTodo',
+  'in-progress': 'statusInProgress',
+  'done': 'statusDone',
+  'released': 'statusReleased',
+}
+
+const PRIORITY_BADGE_CLASSES: Record<Task['priority'], string> = {
+  low: 'priorityLow',
+  medium: 'priorityMedium',
+  high: 'priorityHigh',
 }
 
 function isOverdue(dueDate?: string) {
@@ -112,7 +119,7 @@ export default function ProjectDetails() {
           {project.description && <p className="page-subtitle">{project.description}</p>}
         </div>
         <div className="page-header-actions">
-          <label className="checkbox-label">
+          <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={hideReleased}
@@ -133,41 +140,47 @@ export default function ProjectDetails() {
           <p>Add your first task to get started.</p>
           <button className="btn btn-primary" onClick={openCreateModal}>+ Create Task</button>
         </div>
+      ) : hideReleased && project.tasks.every((t) => t.status === 'released') ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🚀</div>
+          <h2>All tasks released</h2>
+          <p>Every task in this project has been released.</p>
+        </div>
       ) : (
-        <div className={`kanban-board kanban-cols-${visibleStatuses.length}`}>
+        <div className={`${styles.kanbanBoard} ${styles[`kanbanCols${visibleStatuses.length}`]}`}>
           {visibleStatuses.map((status) => (
-            <div key={status} className="kanban-column">
-              <div className="kanban-column-header">
-                <span className={`status-badge status-${status}`}>{STATUS_LABELS[status]}</span>
-                <span className="kanban-count">{tasksByStatus[status].length}</span>
+            <div key={status} className={styles.kanbanColumn}>
+              <div className={styles.kanbanColumnHeader}>
+                <span className={`${styles.statusBadge} ${styles[STATUS_BADGE_CLASSES[status]]}`}>{STATUS_LABELS[status]}</span>
+                <span className={styles.kanbanCount}>{tasksByStatus[status].length}</span>
               </div>
 
-              <div className="kanban-tasks">
+              <div className={styles.kanbanTasks}>
                 {tasksByStatus[status].length === 0 ? (
-                  <div className="kanban-empty">No tasks</div>
+                  <div className={styles.kanbanEmpty}>No tasks</div>
                 ) : (
                   tasksByStatus[status].map((task) => {
                     const overdue = isOverdue(task.dueDate)
                     return (
-                      <div key={task.id} className={`task-card${overdue ? ' task-card-overdue' : ''}`}>
-                        <div className="task-card-header">
+                      <div key={task.id} className={`${styles.taskCard}${overdue ? ` ${styles.taskCardOverdue}` : ''}`}>
+                        <div className={styles.taskCardHeader}>
                           <h3>{task.title}</h3>
-                          <span className={`priority-badge priority-${task.priority}`}>
+                          <span className={`${styles.priorityBadge} ${styles[PRIORITY_BADGE_CLASSES[task.priority]]}`}>
                             {PRIORITY_LABELS[task.priority]}
                           </span>
                         </div>
                         {task.description && (
-                          <p className="task-card-desc">{task.description}</p>
+                          <p className={styles.taskCardDesc}>{task.description}</p>
                         )}
-                        <div className="task-card-footer">
+                        <div className={styles.taskCardFooter}>
                           {task.dueDate ? (
-                            <span className={`task-due-date${overdue ? ' task-due-date-overdue' : ''}`}>
+                            <span className={`${styles.taskDueDate}${overdue ? ` ${styles.taskDueDateOverdue}` : ''}`}>
                               📅 {new Date(task.dueDate + 'T00:00:00').toLocaleDateString()}
                             </span>
                           ) : (
                             <span />
                           )}
-                          <div className="task-card-actions">
+                          <div className={styles.taskCardActions}>
                             <button
                               className="btn btn-sm btn-ghost"
                               onClick={() => openEditModal(task)}

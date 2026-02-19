@@ -1,34 +1,9 @@
 import { useState, useEffect } from 'react'
 import { createTask, updateTask } from '../services/http'
+import type { Task, TaskModalProps, TaskFormState } from '../types/task'
+import styles from './Modal.module.css'
 
-export interface Task {
-  id: string
-  title: string
-  description: string
-  status: 'todo' | 'in-progress' | 'done' | 'released'
-  priority: 'low' | 'medium' | 'high'
-  dueDate?: string
-  createdAt: string
-}
-
-interface TaskModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSaved: () => void
-  onDelete?: (task: Task) => void
-  projectId: string
-  task?: Task | null // null = create mode, Task = edit mode
-}
-
-type FormState = {
-  title: string
-  description: string
-  status: Task['status']
-  priority: Task['priority']
-  dueDate: string
-}
-
-const EMPTY_FORM: FormState = {
+const EMPTY_FORM: TaskFormState = {
   title: '',
   description: '',
   status: 'todo',
@@ -37,7 +12,7 @@ const EMPTY_FORM: FormState = {
 }
 
 export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectId, task }: TaskModalProps) {
-  const [form, setForm] = useState<FormState>(EMPTY_FORM)
+  const [form, setForm] = useState<TaskFormState>(EMPTY_FORM)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -85,14 +60,14 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
   if (!isOpen) return null
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <h2>{isEditing ? 'Edit Task' : 'Create Task'}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit} className={styles.form}>
           <div className="form-group">
             <label htmlFor="task-title">Title *</label>
             <input
@@ -156,7 +131,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
 
           {error && <p className="form-error">{error}</p>}
 
-          <div className="modal-actions modal-actions-split">
+          <div className={styles.actionsSplit}>
             {isEditing && onDelete && task ? (
               <button
                 type="button"
@@ -169,7 +144,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
             ) : (
               <span />
             )}
-            <div className="modal-actions-right">
+            <div className={styles.actionsRight}>
               <button type="button" className="btn btn-ghost" onClick={onClose} disabled={loading}>
                 Cancel
               </button>

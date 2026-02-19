@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { login, register } from '../services/http'
+import styles from './LandingPage.module.css'
 
 type Tab = 'login' | 'register'
 
@@ -75,23 +76,23 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
+    <div className={styles.authPage}>
+      <div className={styles.authCard}>
+        <div className={styles.authLogo}>
           <span className="navbar-logo-icon">PM</span>
           <h1>Project Manager</h1>
           <p>Manage your projects and tasks efficiently</p>
         </div>
 
-        <div className="auth-tabs">
+        <div className={styles.authTabs}>
           <button
-            className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
+            className={`${styles.authTab} ${tab === 'login' ? styles.active : ''}`}
             onClick={() => switchTab('login')}
           >
             Login
           </button>
           <button
-            className={`auth-tab ${tab === 'register' ? 'active' : ''}`}
+            className={`${styles.authTab} ${tab === 'register' ? styles.active : ''}`}
             onClick={() => switchTab('register')}
           >
             Register
@@ -99,7 +100,7 @@ export default function LandingPage() {
         </div>
 
         {tab === 'login' ? (
-          <form onSubmit={handleLogin} className="auth-form">
+          <form onSubmit={handleLogin} className={styles.authForm}>
             <div className="form-group">
               <label htmlFor="login-email">Email</label>
               <input
@@ -124,13 +125,13 @@ export default function LandingPage() {
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
-            <p className="auth-switch">
+            <p className={styles.authSwitch}>
               Don't have an account?{' '}
               <span className="link" onClick={() => switchTab('register')}>Register</span>
             </p>
           </form>
         ) : (
-          <form onSubmit={handleRegister} className="auth-form">
+          <form onSubmit={handleRegister} className={styles.authForm}>
             <div className="form-group">
               <label htmlFor="reg-name">Full Name</label>
               <input
@@ -175,7 +176,7 @@ export default function LandingPage() {
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
-            <p className="auth-switch">
+            <p className={styles.authSwitch}>
               Already have an account?{' '}
               <span className="link" onClick={() => switchTab('login')}>Sign in</span>
             </p>

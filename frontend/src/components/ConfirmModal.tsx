@@ -1,12 +1,5 @@
-interface ConfirmModalProps {
-  isOpen: boolean
-  title: string
-  message: string
-  confirmLabel?: string
-  onConfirm: () => void
-  onCancel: () => void
-  danger?: boolean
-}
+import type { ConfirmModalProps } from '../types/modal'
+import styles from './Modal.module.css'
 
 export default function ConfirmModal({
   isOpen,
@@ -20,16 +13,16 @@ export default function ConfirmModal({
   if (!isOpen) return null
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal modal-confirm" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className={styles.overlay} onClick={onCancel}>
+      <div className={`${styles.modal} ${styles.confirm}`} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onCancel}>✕</button>
+          <button className={styles.closeBtn} onClick={onCancel}>✕</button>
         </div>
-        <div className="modal-body">
+        <div className={styles.body}>
           <p>{message}</p>
         </div>
-        <div className="modal-actions modal-actions-padded">
+        <div className={styles.actionsPadded}>
           <button className="btn btn-ghost" onClick={onCancel}>
             Cancel
           </button>

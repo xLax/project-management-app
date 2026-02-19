@@ -1,0 +1,159 @@
+/* ─── Kanban board ───────────────────────────────────────────────────────────── */
+.kanbanBoard {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+.kanbanCols3 { grid-template-columns: repeat(3, 1fr); }
+.kanbanCols4 { grid-template-columns: repeat(4, 1fr); }
+
+.kanbanColumn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  min-height: 200px;
+}
+
+.kanbanColumnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.kanbanCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kanbanTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kanbanEmpty {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ─── Task card ──────────────────────────────────────────────────────────────── */
+.taskCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.taskCardOverdue {
+  background: #fff5f5;
+  border-color: #fca5a5;
+}
+
+.taskCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.taskCardHeader h3 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.taskCardDesc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+}
+
+.taskCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.taskDueDate {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.taskDueDateOverdue {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.taskCardActions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* ─── Status badges ──────────────────────────────────────────────────────────── */
+.statusBadge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.statusTodo        { background: #f1f5f9; color: #64748b; }
+.statusInProgress  { background: #eff6ff; color: #3b82f6; }
+.statusDone        { background: #f0fdf4; color: #16a34a; }
+.statusReleased    { background: #f5f3ff; color: #7c3aed; }
+
+/* ─── Priority badges ────────────────────────────────────────────────────────── */
+.priorityBadge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.priorityLow    { background: #f0fdf4; color: #16a34a; }
+.priorityMedium { background: #fffbeb; color: #d97706; }
+.priorityHigh   { background: #fef2f2; color: #dc2626; }
+
+/* ─── Checkbox ───────────────────────────────────────────────────────────────── */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.checkboxLabel input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .kanbanBoard {
+    grid-template-columns: 1fr;
+  }
+}

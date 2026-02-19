@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import styles from './Navbar.module.css'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -10,10 +11,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="navbar">
-      <div className="navbar-left">
+    <nav className={styles.navbar}>
+      <div className={styles.navbarLeft}>
         <button
-          className="navbar-logo"
+          className={styles.navbarLogo}
           onClick={() => navigate(isLoggedIn ? '/dashboard' : '/')}
           title="Project Manager"
         >
@@ -31,7 +32,7 @@ export default function Navbar() {
         )}
       </div>
 
-      <div className="navbar-right">
+      <div className={styles.navbarRight}>
         {isLoggedIn ? (
           <>
             <button
