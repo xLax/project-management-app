@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createProject } from '../services/http'
+import FormGroup from '../components/FormGroup'
 
 export default function CreateProject() {
   const navigate = useNavigate()
@@ -44,8 +45,7 @@ export default function CreateProject() {
 
       <div className="card">
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="project-name">Project Name *</label>
+          <FormGroup label="Project Name *" htmlFor="project-name">
             <input
               id="project-name"
               type="text"
@@ -53,10 +53,9 @@ export default function CreateProject() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
-          </div>
+          </FormGroup>
 
-          <div className="form-group">
-            <label htmlFor="project-date">Created On</label>
+          <FormGroup label="Created On" htmlFor="project-date">
             <input
               id="project-date"
               type="text"
@@ -64,10 +63,9 @@ export default function CreateProject() {
               disabled
               className="input-disabled"
             />
-          </div>
+          </FormGroup>
 
-          <div className="form-group">
-            <label htmlFor="project-desc">Description</label>
+          <FormGroup label="Description" htmlFor="project-desc">
             <textarea
               id="project-desc"
               placeholder="What is this project about?"
@@ -75,7 +73,7 @@ export default function CreateProject() {
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={4}
             />
-          </div>
+          </FormGroup>
 
           {error && <p className="form-error">{error}</p>}
 

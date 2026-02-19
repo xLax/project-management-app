@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { login, register } from '../services/http'
 import styles from './LandingPage.module.css'
+import FormGroup from '../components/FormGroup'
 
 type Tab = 'login' | 'register'
 
@@ -101,8 +102,7 @@ export default function LandingPage() {
 
         {tab === 'login' ? (
           <form onSubmit={handleLogin} className={styles.authForm}>
-            <div className="form-group">
-              <label htmlFor="login-email">Email</label>
+            <FormGroup label="Email" htmlFor="login-email">
               <input
                 id="login-email"
                 type="email"
@@ -110,9 +110,8 @@ export default function LandingPage() {
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="login-password">Password</label>
+            </FormGroup>
+            <FormGroup label="Password" htmlFor="login-password">
               <input
                 id="login-password"
                 type="password"
@@ -120,7 +119,7 @@ export default function LandingPage() {
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
               />
-            </div>
+            </FormGroup>
             {error && <p className="form-error">{error}</p>}
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
@@ -132,8 +131,7 @@ export default function LandingPage() {
           </form>
         ) : (
           <form onSubmit={handleRegister} className={styles.authForm}>
-            <div className="form-group">
-              <label htmlFor="reg-name">Full Name</label>
+            <FormGroup label="Full Name" htmlFor="reg-name">
               <input
                 id="reg-name"
                 type="text"
@@ -141,9 +139,8 @@ export default function LandingPage() {
                 value={registerForm.name}
                 onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="reg-email">Email</label>
+            </FormGroup>
+            <FormGroup label="Email" htmlFor="reg-email">
               <input
                 id="reg-email"
                 type="email"
@@ -151,9 +148,8 @@ export default function LandingPage() {
                 value={registerForm.email}
                 onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="reg-password">Password</label>
+            </FormGroup>
+            <FormGroup label="Password" htmlFor="reg-password">
               <input
                 id="reg-password"
                 type="password"
@@ -161,9 +157,8 @@ export default function LandingPage() {
                 value={registerForm.password}
                 onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="reg-confirm">Confirm Password</label>
+            </FormGroup>
+            <FormGroup label="Confirm Password" htmlFor="reg-confirm">
               <input
                 id="reg-confirm"
                 type="password"
@@ -171,7 +166,7 @@ export default function LandingPage() {
                 value={registerForm.confirm}
                 onChange={(e) => setRegisterForm({ ...registerForm, confirm: e.target.value })}
               />
-            </div>
+            </FormGroup>
             {error && <p className="form-error">{error}</p>}
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
               {loading ? 'Creating account...' : 'Create Account'}

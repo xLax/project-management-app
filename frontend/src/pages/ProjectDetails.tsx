@@ -4,6 +4,8 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { getProject, deleteTask } from '../services/http'
 import TaskModal from '../components/TaskModal'
 import ConfirmModal from '../components/ConfirmModal'
+import TaskCard from '../components/TaskCard'
+import EmptyState from '../components/EmptyState'
 import type { Task } from '../types/task'
 import type { Project } from '../types/project'
 import styles from './ProjectDetails.module.css'
@@ -15,12 +17,6 @@ const STATUS_LABELS: Record<Task['status'], string> = {
   'released': 'Released',
 }
 
-const PRIORITY_LABELS: Record<Task['priority'], string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-}
-
 const STATUS_BADGE_CLASSES: Record<Task['status'], string> = {
   'todo': 'statusTodo',
   'in-progress': 'statusInProgress',
@@ -28,18 +24,7 @@ const STATUS_BADGE_CLASSES: Record<Task['status'], string> = {
   'released': 'statusReleased',
 }
 
-const PRIORITY_BADGE_CLASSES: Record<Task['priority'], string> = {
-  low: 'priorityLow',
-  medium: 'priorityMedium',
-  high: 'priorityHigh',
-}
 
-function isOverdue(dueDate?: string) {
-  if (!dueDate) return false
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return new Date(dueDate) < today
-}
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>()
@@ -134,18 +119,18 @@ export default function ProjectDetails() {
       </div>
 
       {project.tasks.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">✅</div>
-          <h2>No tasks yet</h2>
-          <p>Add your first task to get started.</p>
-          <button className="btn btn-primary" onClick={openCreateModal}>+ Create Task</button>
-        </div>
+        <EmptyState
+          icon="✅"
+          title="No tasks yet"
+          message="Add your first task to get started."
+          action={{ label: '+ Create Task', onClick: openCreateModal }}
+        />
       ) : hideReleased && project.tasks.every((t) => t.status === 'released') ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🚀</div>
-          <h2>All tasks released</h2>
-          <p>Every task in this project has been released.</p>
-        </div>
+        <EmptyState
+          icon="🚀"
+          title="All tasks released"
+          message="Every task in this project has been released."
+        />
       ) : (
         <div className={`${styles.kanbanBoard} ${styles[`kanbanCols${visibleStatuses.length}`]}`}>
           {visibleStatuses.map((status) => (
@@ -159,46 +144,15 @@ export default function ProjectDetails() {
                 {tasksByStatus[status].length === 0 ? (
                   <div className={styles.kanbanEmpty}>No tasks</div>
                 ) : (
-                  tasksByStatus[status].map((task) => {
-                    const overdue = isOverdue(task.dueDate)
-                    return (
-                      <div key={task.id} className={`${styles.taskCard}${overdue ? ` ${styles.taskCardOverdue}` : ''}`}>
-                        <div className={styles.taskCardHeader}>
-                          <h3>{task.title}</h3>
-                          <span className={`${styles.priorityBadge} ${styles[PRIORITY_BADGE_CLASSES[task.priority]]}`}>
-                            {PRIORITY_LABELS[task.priority]}
-                          </span>
-                        </div>
-                        {task.description && (
-                          <p className={styles.taskCardDesc}>{task.description}</p>
-                        )}
-                        <div className={styles.taskCardFooter}>
-                          {task.dueDate ? (
-                            <span className={`${styles.taskDueDate}${overdue ? ` ${styles.taskDueDateOverdue}` : ''}`}>
-                              📅 {new Date(task.dueDate + 'T00:00:00').toLocaleDateString()}
-                            </span>
-                          ) : (
-                            <span />
-                          )}
-                          <div className={styles.taskCardActions}>
-                            <button
-                              className="btn btn-sm btn-ghost"
-                              onClick={() => openEditModal(task)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="btn btn-sm btn-danger"
-                              onClick={() => handleDeleteRequest(task)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })
+                  tasksByStatus[status].map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onEdit={openEditModal}
+                      onDelete={handleDeleteRequest}
+                      deleteDisabled={deleteMutation.isPending}
+                    />
+                  ))
                 )}
               </div>
             </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { createTask, updateTask } from '../services/http'
 import type { Task, TaskModalProps, TaskFormState } from '../types/task'
 import styles from './Modal.module.css'
+import FormGroup from './FormGroup'
 
 const EMPTY_FORM: TaskFormState = {
   title: '',
@@ -68,8 +69,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          <div className="form-group">
-            <label htmlFor="task-title">Title *</label>
+          <FormGroup label="Title *" htmlFor="task-title">
             <input
               id="task-title"
               type="text"
@@ -77,10 +77,9 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
-          </div>
+          </FormGroup>
 
-          <div className="form-group">
-            <label htmlFor="task-description">Description</label>
+          <FormGroup label="Description" htmlFor="task-description">
             <textarea
               id="task-description"
               placeholder="Describe the task..."
@@ -88,11 +87,10 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
             />
-          </div>
+          </FormGroup>
 
           <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="task-status">Status</label>
+            <FormGroup label="Status" htmlFor="task-status">
               <select
                 id="task-status"
                 value={form.status}
@@ -103,10 +101,9 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
                 <option value="done">Done</option>
                 <option value="released">Released</option>
               </select>
-            </div>
+            </FormGroup>
 
-            <div className="form-group">
-              <label htmlFor="task-priority">Priority</label>
+            <FormGroup label="Priority" htmlFor="task-priority">
               <select
                 id="task-priority"
                 value={form.priority}
@@ -116,18 +113,17 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
-            </div>
+            </FormGroup>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="task-due-date">Due Date <span className="label-optional">(optional)</span></label>
+          <FormGroup label="Due Date" htmlFor="task-due-date" optional>
             <input
               id="task-due-date"
               type="date"
               value={form.dueDate}
               onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
             />
-          </div>
+          </FormGroup>
 
           {error && <p className="form-error">{error}</p>}
 
