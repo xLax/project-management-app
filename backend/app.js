@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
+const authRoutes = require('./routes/auth');
+const projectRoutes = require('./routes/projects');
+
 dotenv.config();
 
 const app = express();
@@ -18,7 +21,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.json({ message: 'Project Management API is running' });
 });
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
  
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;

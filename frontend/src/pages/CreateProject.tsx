@@ -15,9 +15,9 @@ export default function CreateProject() {
 
   const mutation = useMutation({
     mutationFn: () => createProject(form),
-    onSuccess: (newProject: { id: string }) => {
+    onSuccess: (newProject: { _id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
-      navigate(`/projects/${newProject.id}`)
+      navigate(`/projects/${newProject._id}`)
     },
     onError: (err: any) => {
       setError(err.message || 'Failed to create project.')

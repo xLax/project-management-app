@@ -57,9 +57,9 @@ export default function Dashboard() {
         <div className={styles.projectGrid}>
           {projects.map((project) => (
             <ProjectCard
-              key={project.id}
+              key={project._id}
               project={project}
-              onClick={() => navigate(`/projects/${project.id}`)}
+              onClick={() => navigate(`/projects/${project._id}`)}
             />
           ))}
         </div>

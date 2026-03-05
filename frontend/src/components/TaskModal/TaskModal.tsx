@@ -45,7 +45,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
     try {
       const payload = { ...form, dueDate: form.dueDate || undefined }
       if (isEditing && task) {
-        await updateTask(projectId, task.id, payload)
+        await updateTask(projectId, task._id, payload)
       } else {
         await createTask(projectId, payload)
       }

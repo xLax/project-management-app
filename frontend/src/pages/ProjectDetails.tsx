@@ -69,7 +69,7 @@ export default function ProjectDetails() {
 
   function confirmDelete() {
     if (taskToDelete) {
-      deleteMutation.mutate(taskToDelete.id)
+      deleteMutation.mutate(taskToDelete._id)
       setTaskToDelete(null)
     }
   }
@@ -146,7 +146,7 @@ export default function ProjectDetails() {
                 ) : (
                   tasksByStatus[status].map((task) => (
                     <TaskCard
-                      key={task.id}
+                      key={task._id}
                       task={task}
                       onEdit={openEditModal}
                       onDelete={handleDeleteRequest}

@@ -1,18 +1,22 @@
 // ─── Base URL ────────────────────────────────────────────────────────────────
-// Switch this to your real backend URL when the backend is ready.
 const BASE_URL = '/api'
 
-// ─── Demo helpers (localStorage) ─────────────────────────────────────────────
-function getStoredProjects() {
-  return JSON.parse(localStorage.getItem('projects') || '[]')
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function authHeaders() {
+  const token = localStorage.getItem('token')
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  }
 }
 
-function storeProjects(projects) {
-  localStorage.setItem('projects', JSON.stringify(projects))
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+async function handleResponse(res) {
+  const data = await res.json()
+  if (!res.ok) {
+    const message = data.errors?.[0]?.msg || data.message || 'Something went wrong.'
+    throw new Error(message)
+  }
+  return data
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -26,12 +30,7 @@ export async function login(email, password) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   })
-  const data = await res.json()
-  if (!res.ok) {
-    const message = data.errors?.[0]?.msg || data.message || 'Login failed.'
-    throw new Error(message)
-  }
-  return data
+  return handleResponse(res)
 }
 
 /**
@@ -43,12 +42,7 @@ export async function register(name, email, password) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password }),
   })
-  const data = await res.json()
-  if (!res.ok) {
-    const message = data.errors?.[0]?.msg || data.message || 'Registration failed.'
-    throw new Error(message)
-  }
-  return data
+  return handleResponse(res)
 }
 
 /**
@@ -71,39 +65,28 @@ export async function logout() {
  * GET /api/projects
  */
 export async function getProjects() {
-  await delay(300)
-  // TODO: replace with -> fetch(`${BASE_URL}/projects`, { headers: authHeaders() })
-  return getStoredProjects()
+  const res = await fetch(`${BASE_URL}/projects`, { headers: authHeaders() })
+  return handleResponse(res)
 }
 
 /**
- * GET /api/projects/:id
+ * GET /api/projects/:id  (returns project with tasks embedded)
  */
 export async function getProject(id) {
-  await delay(300)
-  // TODO: replace with -> fetch(`${BASE_URL}/projects/${id}`, { headers: authHeaders() })
-  const projects = getStoredProjects()
-  const project = projects.find((p) => p.id === id)
-  if (!project) throw new Error('Project not found')
-  return project
+  const res = await fetch(`${BASE_URL}/projects/${id}`, { headers: authHeaders() })
+  return handleResponse(res)
 }
 
 /**
  * POST /api/projects
  */
 export async function createProject(data) {
-  await delay(400)
-  // TODO: replace with -> fetch(`${BASE_URL}/projects`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) })
-  const projects = getStoredProjects()
-  const newProject = {
-    id: crypto.randomUUID(),
-    ...data,
-    tasks: [],
-    createdAt: new Date().toISOString(),
-  }
-  projects.push(newProject)
-  storeProjects(projects)
-  return newProject
+  const res = await fetch(`${BASE_URL}/projects`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  })
+  return handleResponse(res)
 }
 
 // ─── Tasks ────────────────────────────────────────────────────────────────────
@@ -112,56 +95,33 @@ export async function createProject(data) {
  * POST /api/projects/:projectId/tasks
  */
 export async function createTask(projectId, data) {
-  await delay(400)
-  // TODO: replace with -> fetch(`${BASE_URL}/projects/${projectId}/tasks`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) })
-  const projects = getStoredProjects()
-  const project = projects.find((p) => p.id === projectId)
-  if (!project) throw new Error('Project not found')
-  const newTask = {
-    id: crypto.randomUUID(),
-    ...data,
-    createdAt: new Date().toISOString(),
-  }
-  project.tasks.push(newTask)
-  storeProjects(projects)
-  return newTask
+  const res = await fetch(`${BASE_URL}/projects/${projectId}/tasks`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  })
+  return handleResponse(res)
 }
 
 /**
  * PUT /api/projects/:projectId/tasks/:taskId
  */
 export async function updateTask(projectId, taskId, data) {
-  await delay(400)
-  // TODO: replace with -> fetch(`${BASE_URL}/projects/${projectId}/tasks/${taskId}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) })
-  const projects = getStoredProjects()
-  const project = projects.find((p) => p.id === projectId)
-  if (!project) throw new Error('Project not found')
-  const taskIndex = project.tasks.findIndex((t) => t.id === taskId)
-  if (taskIndex === -1) throw new Error('Task not found')
-  project.tasks[taskIndex] = { ...project.tasks[taskIndex], ...data }
-  storeProjects(projects)
-  return project.tasks[taskIndex]
+  const res = await fetch(`${BASE_URL}/projects/${projectId}/tasks/${taskId}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  })
+  return handleResponse(res)
 }
 
 /**
  * DELETE /api/projects/:projectId/tasks/:taskId
  */
 export async function deleteTask(projectId, taskId) {
-  await delay(300)
-  // TODO: replace with -> fetch(`${BASE_URL}/projects/${projectId}/tasks/${taskId}`, { method: 'DELETE', headers: authHeaders() })
-  const projects = getStoredProjects()
-  const project = projects.find((p) => p.id === projectId)
-  if (!project) throw new Error('Project not found')
-  project.tasks = project.tasks.filter((t) => t.id !== taskId)
-  storeProjects(projects)
-  return { success: true }
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function authHeaders() {
-  const token = localStorage.getItem('token')
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  }
+  const res = await fetch(`${BASE_URL}/projects/${projectId}/tasks/${taskId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  })
+  return handleResponse(res)
 }

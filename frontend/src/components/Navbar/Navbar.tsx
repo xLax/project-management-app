@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import styles from './Navbar.module.css'
 import { logout } from '../../services/http'
+import queryClient from '../../queryClient'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -8,6 +9,7 @@ export default function Navbar() {
 
   async function handleLogout() {
     await logout()
+    queryClient.clear()
     navigate('/')
   }
 
