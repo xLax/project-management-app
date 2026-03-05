@@ -35,7 +35,7 @@ export default function LandingPage() {
     setError('')
     try {
       const res = await login(loginForm.email, loginForm.password)
-      if (res.success && res.token) {
+      if (res.token) {
         localStorage.setItem('token', res.token)
         navigate('/dashboard')
       }
@@ -60,7 +60,7 @@ export default function LandingPage() {
     setError('')
     try {
       const res = await register(registerForm.name, registerForm.email, registerForm.password)
-      if (res.success && res.token) {
+      if (res.token) {
         localStorage.setItem('token', res.token)
         navigate('/dashboard')
       }

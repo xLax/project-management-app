@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import styles from './Navbar.module.css'
+import { logout } from '../../services/http'
 
 export default function Navbar() {
   const navigate = useNavigate()
   const isLoggedIn = !!localStorage.getItem('token')
 
-  function handleLogout() {
-    localStorage.removeItem('token')
+  async function handleLogout() {
+    await logout()
     navigate('/')
   }
 

@@ -19,24 +19,50 @@ function delay(ms) {
 
 /**
  * POST /api/auth/login
- * Demo: always succeeds and returns a fake token.
  */
 export async function login(email, password) {
-  await delay(500)
-  // TODO: replace with -> fetch(`${BASE_URL}/auth/login`, { method: 'POST', body: JSON.stringify({ email, password }) })
-  const token = 'demo-token-' + Date.now()
-  return { token, success: true }
+  const res = await fetch(`${BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  const data = await res.json()
+  if (!res.ok) {
+    const message = data.errors?.[0]?.msg || data.message || 'Login failed.'
+    throw new Error(message)
+  }
+  return data
 }
 
 /**
  * POST /api/auth/register
- * Demo: always succeeds and returns a fake token.
  */
 export async function register(name, email, password) {
-  await delay(500)
-  // TODO: replace with -> fetch(`${BASE_URL}/auth/register`, { method: 'POST', body: JSON.stringify({ name, email, password }) })
-  const token = 'demo-token-' + Date.now()
-  return { token, success: true }
+  const res = await fetch(`${BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  })
+  const data = await res.json()
+  if (!res.ok) {
+    const message = data.errors?.[0]?.msg || data.message || 'Registration failed.'
+    throw new Error(message)
+  }
+  return data
+}
+
+/**
+ * POST /api/auth/logout
+ */
+export async function logout() {
+  const token = localStorage.getItem('token')
+  if (token) {
+    await fetch(`${BASE_URL}/auth/logout`, {
+      method: 'POST',
+      headers: authHeaders(),
+    }).catch(() => {})
+  }
+  localStorage.removeItem('token')
 }
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
