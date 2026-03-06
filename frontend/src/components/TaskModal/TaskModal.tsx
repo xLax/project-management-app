@@ -120,7 +120,7 @@ export default function TaskModal({ isOpen, onClose, onSaved, onDelete, projectI
             <input
               id="task-due-date"
               type="date"
-              value={form.dueDate}
+              value={form.dueDate ? new Date(form.dueDate).toISOString().split('T')[0] : ''}
               onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
             />
           </FormGroup>

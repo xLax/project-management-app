@@ -46,7 +46,7 @@ export default function TaskCard({ task, onEdit, onDelete, deleteDisabled }: Tas
       <div className={styles.taskCardFooter}>
         {task.dueDate ? (
           <span className={`${styles.taskDueDate}${overdue ? ` ${styles.taskDueDateOverdue}` : ''}`}>
-            📅 {new Date(task.dueDate + 'T00:00:00').toLocaleDateString()}
+            📅 {new Date(task.dueDate).toLocaleDateString()}
           </span>
         ) : (
           <span />
