@@ -6,27 +6,11 @@ import TaskModal from '../components/TaskModal/TaskModal'
 import ConfirmModal from '../components/ConfirmModal/ConfirmModal'
 import ProjectModal from '../components/ProjectModal/ProjectModal'
 import DeleteProjectModal from '../components/DeleteProjectModal/DeleteProjectModal'
-import TaskCard from '../components/TaskCard/TaskCard'
+import KanbanColumn from '../components/KanbanColumn/KanbanColumn'
 import EmptyState from '../components/EmptyState/EmptyState'
 import type { Task } from '../types/task'
 import type { Project } from '../types/project'
 import styles from './ProjectDetails.module.css'
-
-const STATUS_LABELS: Record<Task['status'], string> = {
-  'todo': 'To Do',
-  'in-progress': 'In Progress',
-  'done': 'Done',
-  'released': 'Released',
-}
-
-const STATUS_BADGE_CLASSES: Record<Task['status'], string> = {
-  'todo': 'statusTodo',
-  'in-progress': 'statusInProgress',
-  'done': 'statusDone',
-  'released': 'statusReleased',
-}
-
-
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>()
@@ -155,28 +139,14 @@ export default function ProjectDetails() {
       ) : (
         <div className={`${styles.kanbanBoard} ${styles[`kanbanCols${visibleStatuses.length}`]}`}>
           {visibleStatuses.map((status) => (
-            <div key={status} className={styles.kanbanColumn}>
-              <div className={styles.kanbanColumnHeader}>
-                <span className={`${styles.statusBadge} ${styles[STATUS_BADGE_CLASSES[status]]}`}>{STATUS_LABELS[status]}</span>
-                <span className={styles.kanbanCount}>{tasksByStatus[status].length}</span>
-              </div>
-
-              <div className={styles.kanbanTasks}>
-                {tasksByStatus[status].length === 0 ? (
-                  <div className={styles.kanbanEmpty}>No tasks</div>
-                ) : (
-                  tasksByStatus[status].map((task) => (
-                    <TaskCard
-                      key={task._id}
-                      task={task}
-                      onEdit={openEditModal}
-                      onDelete={handleDeleteRequest}
-                      deleteDisabled={deleteMutation.isPending}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
+            <KanbanColumn
+              key={status}
+              status={status}
+              tasks={tasksByStatus[status]}
+              onEdit={openEditModal}
+              onDelete={handleDeleteRequest}
+              deleteDisabled={deleteMutation.isPending}
+            />
           ))}
         </div>
       )}

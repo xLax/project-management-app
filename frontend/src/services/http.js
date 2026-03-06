@@ -1,5 +1,8 @@
 // ─── Base URL ────────────────────────────────────────────────────────────────
-const BASE_URL = '/api'
+// VITE_API_URL should be the root domain only, e.g. https://your-api.herokuapp.com
+// In dev: not set — falls back to empty string so BASE_URL becomes '/api' (Vite proxies it).
+// In production: Vite bakes the value in at build time.
+const BASE_URL = (import.meta.env.VITE_API_URL || '') + '/api'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function authHeaders() {
