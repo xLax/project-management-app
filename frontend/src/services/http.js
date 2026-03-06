@@ -89,6 +89,29 @@ export async function createProject(data) {
   return handleResponse(res)
 }
 
+/**
+ * PUT /api/projects/:id
+ */
+export async function updateProject(id, data) {
+  const res = await fetch(`${BASE_URL}/projects/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  })
+  return handleResponse(res)
+}
+
+/**
+ * DELETE /api/projects/:id
+ */
+export async function deleteProject(id) {
+  const res = await fetch(`${BASE_URL}/projects/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  })
+  return handleResponse(res)
+}
+
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
 /**

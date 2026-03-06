@@ -1,0 +1,11 @@
+.prompt {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.confirmInput {
+  margin-top: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}

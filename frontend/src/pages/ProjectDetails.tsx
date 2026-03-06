@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import { getProject, deleteTask } from '../services/http'
+import { getProject, deleteTask, deleteProject } from '../services/http'
 import TaskModal from '../components/TaskModal/TaskModal'
 import ConfirmModal from '../components/ConfirmModal/ConfirmModal'
+import ProjectModal from '../components/ProjectModal/ProjectModal'
+import DeleteProjectModal from '../components/DeleteProjectModal/DeleteProjectModal'
 import TaskCard from '../components/TaskCard/TaskCard'
 import EmptyState from '../components/EmptyState/EmptyState'
 import type { Task } from '../types/task'
@@ -35,6 +37,8 @@ export default function ProjectDetails() {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [hideReleased, setHideReleased] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
+  const [isEditProjectOpen, setIsEditProjectOpen] = useState(false)
+  const [isDeleteProjectOpen, setIsDeleteProjectOpen] = useState(false)
 
   const { data: project, isLoading, isError } = useQuery<Project>({
     queryKey: ['project', id],
@@ -46,6 +50,14 @@ export default function ProjectDetails() {
     mutationFn: (taskId: string) => deleteTask(id!, taskId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project', id] })
+    },
+  })
+
+  const deleteProjectMutation = useMutation({
+    mutationFn: () => deleteProject(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      navigate('/dashboard')
     },
   })
 
@@ -100,7 +112,16 @@ export default function ProjectDetails() {
       <div className="page-header">
         <div>
           <button className="back-link" onClick={() => navigate('/dashboard')}>← Dashboard</button>
-          <h1>{project.name}</h1>
+          <div className={styles.projectTitleRow}>
+            <h1>{project.name}</h1>
+            <button
+              className={styles.iconBtn}
+              title="Edit project"
+              onClick={() => setIsEditProjectOpen(true)}
+            >
+              ✏️
+            </button>
+          </div>
           {project.description && <p className="page-subtitle">{project.description}</p>}
         </div>
         <div className="page-header-actions">
@@ -177,6 +198,24 @@ export default function ProjectDetails() {
         danger
         onConfirm={confirmDelete}
         onCancel={() => setTaskToDelete(null)}
+      />
+
+      {project && (
+        <ProjectModal
+          isOpen={isEditProjectOpen}
+          onClose={() => setIsEditProjectOpen(false)}
+          onSaved={() => { queryClient.invalidateQueries({ queryKey: ['project', id] }); queryClient.invalidateQueries({ queryKey: ['projects'] }) }}
+          onDeleteRequest={() => { setIsEditProjectOpen(false); setIsDeleteProjectOpen(true) }}
+          project={project}
+        />
+      )}
+
+      <DeleteProjectModal
+        isOpen={isDeleteProjectOpen}
+        projectName={project.name}
+        loading={deleteProjectMutation.isPending}
+        onConfirm={() => deleteProjectMutation.mutate()}
+        onCancel={() => setIsDeleteProjectOpen(false)}
       />
     </div>
   )

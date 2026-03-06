@@ -80,6 +80,50 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// PUT /api/projects/:id — update project name and description
+router.put(
+  '/:id',
+  [body('name').trim().notEmpty().withMessage('Project name is required')],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const project = await Project.findOneAndUpdate(
+        { _id: req.params.id, owner: req.userId },
+        { name: req.body.name, description: req.body.description || '' },
+        { new: true, runValidators: true }
+      );
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+      res.json(project);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+);
+
+// DELETE /api/projects/:id — delete a project and all its tasks
+router.delete('/:id', async (req, res) => {
+  try {
+    const project = await Project.findOneAndDelete({ _id: req.params.id, owner: req.userId });
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    await Task.deleteMany({ project: req.params.id });
+
+    res.json({ message: 'Project deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
 // GET /api/projects/:projectId/tasks — get all tasks for a project
