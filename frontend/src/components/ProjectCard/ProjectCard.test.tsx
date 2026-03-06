@@ -4,7 +4,7 @@ import ProjectCard from './ProjectCard'
 import type { Project } from '../../types/project'
 
 const baseProject: Project = {
-  id: '1',
+  _id: '1',
   name: 'Website Redesign',
   description: 'Redesign the company website',
   createdAt: '2026-01-15T10:00:00.000Z',
@@ -12,7 +12,7 @@ const baseProject: Project = {
 }
 
 const makeTask = (id: string) => ({
-  id,
+  _id: id,
   title: 'Task',
   description: '',
   status: 'todo' as const,

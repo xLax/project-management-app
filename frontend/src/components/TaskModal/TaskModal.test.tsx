@@ -19,7 +19,7 @@ const baseProps = {
 }
 
 const existingTask: Task = {
-  id: 't1',
+  _id: 't1',
   title: 'Existing task',
   description: 'Some description',
   status: 'todo',

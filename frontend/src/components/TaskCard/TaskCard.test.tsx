@@ -4,7 +4,7 @@ import TaskCard from './TaskCard'
 import type { Task } from '../../types/task'
 
 const baseTask: Task = {
-  id: 't1',
+  _id: 't1',
   title: 'Fix login bug',
   description: 'The login form throws an error',
   status: 'todo',
