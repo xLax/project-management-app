@@ -3,6 +3,7 @@
 A full-stack project management application built with **React** (frontend) and **Node.js / Express** (backend), backed by **MongoDB** via Mongoose.
 
 Live Demo: https://project-management-app-eta-pink.vercel.app/
+
 IMPORTANT NOTE: I am using free tier of render.com for web service, so first api call might take a minute to process.
 
 ---
